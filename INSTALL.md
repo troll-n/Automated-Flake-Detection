@@ -44,6 +44,9 @@ pip install -e .
 ```
 # Part 2: Hardware Install
 
+to be filled in once we're secure on what hardware we're on
+
+## Prior Motorized Stage
 
 
 
