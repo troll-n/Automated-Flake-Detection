@@ -1,0 +1,9 @@
+build/
+*.egg-info
+__pycache__
+
+# dont commit the results
+AutoFlakeDetect/Output/*
+
+# Dont commit VSCode settings
+.vscode
