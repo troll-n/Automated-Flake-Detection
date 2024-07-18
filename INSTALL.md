@@ -1,4 +1,4 @@
-# Installation
+# Part 1: Installation of the 2DMatGMM Package
 
 To install and use the 2DMatGMM package, you first need to install the required dependencies. This installation process has been tested using Python 3.10.
 
@@ -25,14 +25,6 @@ This will install all necessary packages and makes it possible to import the pac
 import GMMDetector
 ```
 
-## Optional: Install Detectron2 for Evaluation
-
-The Detectron2 package is not necessary for the basic use of 2DMatGMM, but it is required if you wish to perform model evaluations. To install Detectron2, execute the following commands:
-
-```shell
-pip install torch torchvision pillow==9.5.0
-pip install git+https://github.com/facebookresearch/detectron2@67ac149
-```
 
 ## Example Setup Using Conda
 
@@ -49,11 +41,14 @@ cd 2DMatGMM
 
 # install the package as GMMdetector
 pip install -e .
-
-# If you wish to perform model evaluations
-pip install torch torchvision pillow==9.5.0
-pip install git+https://github.com/facebookresearch/detectron2@67ac149  
 ```
+# Part 2: Hardware Install
 
-This completes the setup process. Now, you're ready to use 2DMatGMM!
+
+
+
+
+# Done!
+
+This completes the setup process. Now, you're ready to use the AFD!
 Check out the [Getting Started Guide](./GETTING_STARTED.md)!
