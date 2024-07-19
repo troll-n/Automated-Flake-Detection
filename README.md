@@ -4,6 +4,50 @@
 
 Prior motorized stage, probably BX-51 microscope, probably FLIR camera, but we don't actually know for sure yet.
 
+## Database Information
+
+### Chip:
+
+PRIMARY KEY Chip_id: Int, A unique integer for identifying the chip; auto_increment
+Material: Str, Name of the material of the chip (Graphene or WSe2)
+Size: Int, Size of the chip, millimeters squared
+Image: Str, Filepath to a decent-resolution image of the entire chip
+
+### Flake:
+
+FOREIGN Chip_id: Int, identifies which chip the flake is on, reference from Chip
+Flake_id: Int, for identifying the flake: one ID per chip but not unqiue, so different flakes on different chips may have the same flake_id
+PRIMARY KEY [Chip_id, Flake_id]: Combo that identifies the particular flake on a particular chip
+Thickness: Str, The name of the layer the flake is from (TAKEN FROM FLAKE CLASS)
+Size: Int, Size of the flake, micrometers squared (TAKEN FROM FLAKE CLASS)
+Center_x: Int, identifies in x where to move the stage to center the flake (DERIVEN FROM FLAKE CLASS) ! FIGURE DATATYPE!
+Center_y: Int, identifies in y where to move the stage to center the flake (DERIVEN FROM FLAKE CLASS) ! FIGURE DATATYPE!
+Confidence: Float, confidence that the flake is correctly identified (DERIVEN FROM FLAKE CLASS)
+LowMag: Str, Filepath to a 2.5x magnification image of the flake
+MedMag: Str, Filepath to a 20x magnification image of the flake 
+HighMag: Str, Filepath to a 50x magnification image of the flake
+
+
+IMAGES NOT STORED ON DATABASE (WOULD DRASTICALLY SLOW DATABASE WRITES AND READS). Instead, images are stored natively.
+
+File Structure:
+
+AutoFlakeDetect
+| -- Output
+|
+| ----Chip 1 (Image of chip_id = 1 exists here) 
+| ------Flake 1 (All images of chip_id = 1, flake_id = 1 exists here)
+| ------Flake 2 (etc)
+| ------Flake {flake_id} (etc) 
+|
+| ----Chip 2 (etc)
+| ------Flake {flake_id} (etc)
+|
+| ----Chip {chip_id} (etc)
+| ------Flake {flake_id} (etc)
+
+Chips that have been discarded can have their directory under Output as well as all of their sub-directories deleted; just keep in mind that this doesn't automatically drop them from the database
+
 ## Installation
 
 To install and set up your system to use the Automated Flake Detector, check out the [installation instructions](INSTALL.md).

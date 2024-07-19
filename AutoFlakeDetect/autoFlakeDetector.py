@@ -200,58 +200,6 @@ for flake,coord in zip(flakes, flakeXYList):
     pass
 
 # DATABASE PHASE
-"""
-TABLE GUIDE:
-
-Chip:
-PRIMARY KEY Chip_id: Int, A unique integer for identifying the chip; auto_increment
-Material: Str, Name of the material of the chip (Graphene or WSe2)
-Size: Int, Size of the chip, millimeters squared
-Image: Str, Filepath to a decent-resolution image of the entire chip
-
-
-Flake: 
-FOREIGN Chip_id: Int, identifies which chip the flake is on, reference from Chip
-Flake_id: Int, for identifying the flake: one ID per chip but not unqiue, so different flakes on different chips may have the same flake_id
-    ^ don't forget to increment in code
-PRIMARY KEY [Chip_id, Flake_id]: Combo that identifies the particular flake on a particular chip
-
-Thickness: Str, The name of the layer the flake is from (TAKEN FROM FLAKE CLASS)
-Size: Int, Size of the flake, micrometers squared (TAKEN FROM FLAKE CLASS)
-Center_x: Int, identifies in x where to move the stage to center the flake (DERIVEN FROM FLAKE CLASS) ! FIGURE DATATYPE!
-Center_y: INt, identifies in y where to move the stage to center the flake (DERIVEN FROM FLAKE CLASS) ! FIGURE DATATYPE!
-Confidence: Float, confidence that the flake is correctly identified (DERIVEN FROM FLAKE CLASS)
-
-LowMag: Str, Filepath to a 2.5x magnification image of the flake
-MedMag: Str, Filepath to a 20x magnification image of the flake 
-HighMag: Str, Filepath to a 50x magnification image of the flake
-
-
-IMAGES NOT STORED ON DATABASE (WOULD DRASTICALLY SLOW DATABASE WRITES AND READS)
-    Instead, images are stored natively.
-
-File Structure:
-
-Custom (YOU ARE HERE)
-| -- Output
-|
-| ----Chip 1 (Image of chip_id = 1 exists here) 
-| ------Flake 1 (All images of chip_id = 1, flake_id = 1 exists here)
-| ------Flake 2 (etc)
-| ------Flake {flake_id} (etc) 
-|
-| ----Chip 2 (etc)
-| ------Flake {flake_id} (etc)
-|
-| ----Chip {chip_id} (etc)
-| ------Flake {flake_id} (etc)
-
-Chips that have been discarded can have their directory under Output as well as
-    all of their sub-directories; just keep in mind that this doesn't automatically
-    drop them from the database
-
-
-"""
 
 # assume flakes has been filled out and 2dmat_db is set up
 # we first need to organize flakes array so that it's readable by executemany
@@ -291,16 +239,4 @@ try:
 except Error as e:
     print(e)
 
-# Maybe make a website to host images?
-
-# Database must be able to store the set amount of images and the location of the flake, aswell as the flake object itself
-# Maybe make a parent class to Flake called FlakeEX that bundles everything together
-# So, DB just holds onto FlakeEX that has everything above.
-# A schema would be just fine because there's no need to have the flexibility of different possible flakes.
-# Conclusion: Use MySQL
-
-# If no database, alternative way to view a map of flakes?
-
-# Seperate development path: A webapp to view the data from all of them?
-# Would need a server for both the database and the webapp anyways. Need to see if I can get a donor laptop 
-# for everything so I don't have to pack all this up + server + webapp and get it out to the team
+# UI?
