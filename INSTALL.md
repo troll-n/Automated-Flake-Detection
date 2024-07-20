@@ -49,7 +49,9 @@ to be filled in once we're secure on what hardware we're on
 ## Prior Motorized Stage
 
 
+# Part 3: MySQL Database
 
+##
 
 # Done!
 

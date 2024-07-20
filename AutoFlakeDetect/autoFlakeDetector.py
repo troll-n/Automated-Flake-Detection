@@ -214,7 +214,7 @@ for flake, coord in zip(flakes,flakeXYList):
             c_id, f_id, flake["thickness"], flake["size"], coord[0], coord[1], conf, lowM,medM,highM
         )
         # above appends (chip id, flake id, flake thickness, flake size, flake x coord, flake y coord, 
-        #   flake confidence, lowmag filepath, medmag filepath, highmag filepath)
+        # flake confidence, lowmag filepath, medmag filepath, highmag filepath)
     )
 
     f_id = f_id + 1
