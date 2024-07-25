@@ -56,7 +56,7 @@ We're using a Blackfly FLIR with the RotPy package. Run the following in your sh
 ```shell
 python -m pip install rotpy
 ```
-while in your venv from before. You may need to install the C++ redistributable from Microsoft if it doesn't work; see [RotPy's documentation](https://matham.github.io/rotpy/README.html). RotPy is really just another SDK.
+while in your venv from before. You may need to install the C++ redistributable from Microsoft if it doesn't work; see [RotPy's documentation](https://matham.github.io/rotpy/README.html). RotPy interfaces with the [Spinnaker SDK](https://www.flir.com/support-center/iis/machine-vision/downloads/spinnaker-sdk-download/spinnaker-sdk--download-files/#anchor1), which you can also install via their website.
 
 # Part 3: MySQL Database
 
