@@ -42,16 +42,23 @@ cd 2DMatGMM
 # install the package as GMMdetector
 pip install -e .
 ```
-# Part 2: Hardware Install
+# Part 2: Hardware-related Installs
 
-to be filled in once we're secure on what hardware we're on
+## Prior ProScan III
 
-## Prior Motorized Stage
+We already have the PriorSDK module implemented in this codebase, but one still needs to install the Prior driver. Luckily, Prior's software isn't all that bad and takes about 2 minutes to install. This install has been tested on a 64 bit Windows computer.
 
+Go to [Prior Scientific's Software Downloads](https://www.prior.com/download-category/software) and specifically download their [ProScan III Firmware](https://www.prior.com/wp-content/themes/prior-scientific/download.php?file=512) install wizard. Once again, you don't need the SDK since it's already included in this repo for convinence. Then, follow the simple installation wizard. The AFD program will take care of finding the firmware for you, so this is all you need.
+
+## Camera
+
+To be filled out as the camera comes in
 
 # Part 3: MySQL Database
 
-##
+
+
+Once done, head on over to the [database setup python notebook](./DBSETUP.ipynb) to setup the database properly; it should only take a minute.
 
 # Done!
 

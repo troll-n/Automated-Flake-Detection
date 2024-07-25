@@ -1,7 +1,7 @@
 """
 Author: Patrick Kaczmarek
 Code that automates flake detection via microscope.
-This program should always be run in the 2DMatGMM venv
+This program should always be run in the 2DMatGMM venv, and expects you to have navigated the microscope to the top left corner of the chip.
 """
 import argparse
 import json
@@ -16,7 +16,6 @@ from GMMDetector import MaterialDetector
 from mysql.connector import Error, connect
 from getpass import getpass
 # libs for the stage and camera?
-# may have to interop?????????? prolly not tho i'd explode if i had to
 
 # Args can stay, just remember final product will have no --num_image
 
@@ -40,7 +39,7 @@ def arg_parse() -> dict:
 
 args = arg_parse()
 
-# Note that any and all references to a x,y coordinate system are in millimeters, with the top left of the chip being (0,0)
+# Note that any and all references to a x,y coordinate system are in micrometers, with the top left of the chip being (0,0)
 
 def getTopLeftXY() -> tuple:
     """
@@ -49,6 +48,8 @@ def getTopLeftXY() -> tuple:
     Returns:
         tuple: Tuple of the x,y coordinate of the top left pixel of the section, relative to global top left.
     """
+    # getpos with sdk
+    # 
     pass
 
 def getFlakeCenterXY(flake) -> tuple:
