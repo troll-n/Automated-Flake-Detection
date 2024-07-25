@@ -3,9 +3,11 @@ Author: Patrick Kaczmarek
 Code that automates flake detection via microscope.
 This program should always be run in the 2DMatGMM venv, and expects you to have navigated the microscope to the top left corner of the chip.
 """
+from ctypes import WinDLL, create_string_buffer
 import argparse
 import json
 import os
+import sys
 
 import cv2
 import numpy as np
@@ -17,7 +19,7 @@ from mysql.connector import Error, connect
 from getpass import getpass
 # libs for the stage and camera?
 
-# Args can stay, just remember final product will have no --num_image
+# Strictly necessary functions
 
 def arg_parse() -> dict:
     """
@@ -39,7 +41,53 @@ def arg_parse() -> dict:
 
 args = arg_parse()
 
-# Note that any and all references to a x,y coordinate system are in micrometers, with the top left of the chip being (0,0)
+rx = create_string_buffer(1000)
+FILE_DIR = os.path.dirname(os.path.abspath(__file__))
+sdkpath = os.path.join(FILE_DIR, "..", "PriorSDK", "x64", "PriorScientificSDK.dll")
+
+if os.path.exists(sdkpath):
+    SDKPrior = WinDLL(sdkpath)
+else:
+    raise RuntimeError("DLL could not be loaded.")
+
+# stage command:passes commands to the controller
+def scmd(msg):
+    print(msg)
+    ret = SDKPrior.PriorScientificSDK_cmd(
+        sessionID, create_string_buffer(msg.encode()), rx
+    )
+    if ret:
+        print(f"Api error {ret}")
+    else:
+        print(f"OK {rx.value.decode()}")
+
+    input("Press ENTER to continue...")
+    return ret, rx.value.decode()
+
+ret = SDKPrior.PriorScientificSDK_Initialise()
+if ret:
+    print(f"Error initialising {ret}")
+    sys.exit()
+else:
+    print(f"Ok initialising {ret}")
+
+
+ret = SDKPrior.PriorScientificSDK_Version(rx)
+print(f"dll version api ret={ret}, version={rx.value.decode()}")
+
+
+sessionID = SDKPrior.PriorScientificSDK_OpenNewSession()
+if sessionID < 0:
+    print(f"Error getting sessionID {ret}")
+else:
+    print(f"SessionID = {sessionID}")
+
+
+ret = SDKPrior.PriorScientificSDK_cmd(
+    sessionID, create_string_buffer(b"dll.apitest 33 goodresponse"), rx
+)
+print(f"api response {ret}, rx = {rx.value.decode()}")
+input("Press ENTER to continue...")
 
 def getTopLeftXY() -> tuple:
     """
@@ -67,7 +115,6 @@ def getFlakeCenterXY(flake) -> tuple:
     return (TL_XY[0] + 0, TL_XY[1] + 0) 
 
 # Constants
-FILE_DIR = os.path.dirname(os.path.abspath(__file__)) # keep
 CONTRAST_PATH_ROOT = os.path.join(FILE_DIR, "..", "GMMDetector", "trained_parameters") # keep
 DATA_DIR = os.path.join(FILE_DIR, "..", "Datasets", "GMMDetectorDatasets") # redirect
 OUT_DIR = os.path.join(FILE_DIR, args["out"]) # keep? may want to make unique for every go
