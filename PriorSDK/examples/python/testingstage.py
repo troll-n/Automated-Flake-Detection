@@ -68,7 +68,10 @@ if realhw:
     # substitute 3 with your com port Id
         
 
-    cmd("controller.stage.goto-position 0 0")
+    cmd("controller.stage.goto-position -1000 -1000")
+
+    cmd("controller.stage.goto-position 1000 1000")
+    cmd("controller.stage.goto-position -1000 -1000")
         
     # disconnect cleanly from controller
         

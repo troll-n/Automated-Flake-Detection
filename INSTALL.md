@@ -52,11 +52,19 @@ Go to [Prior Scientific's Software Downloads](https://www.prior.com/download-cat
 
 ## Camera
 
-To be filled out as the camera comes in
+We're using a Blackfly FLIR with the RotPy package. Run the following in your shell
+```shell
+python -m pip install rotpy
+```
+while in your venv from before. You may need to install the C++ redistributable from Microsoft if it doesn't work; see [RotPy's documentation](https://matham.github.io/rotpy/README.html). RotPy is really just another SDK.
 
 # Part 3: MySQL Database
 
+MySQL is the database of choice for this project. Head on over to [MySQL's community downloads](https://dev.mysql.com/downloads/installer/) and install MySQL with all reccomended packages. You're also going to want to grab the connector package by running this in your shell:
 
+```shell
+pip install mysql-connector-python
+```
 
 Once done, head on over to the [database setup python notebook](./DBSETUP.ipynb) to setup the database properly; it should only take a minute.
 
