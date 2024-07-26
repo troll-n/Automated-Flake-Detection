@@ -2,7 +2,13 @@
 
 ## System Specs
 
-Prior motorized stage, probably BX-51 microscope, probably FLIR camera, but we don't actually know for sure yet.
+* Prior Proscan III Controller
+* Prior Motorized Stage
+* FLIR Blackfly 5 Color Camera
+* BX-51 Microscope
+* Microsoft Surface Pro running Windows 
+
+The AFD program shouldn't run into OS compaitability issues with linux or MacOS assuming all of the packages and drivers exist in said OS. As well, the specs are not that important; one can simply replace the code in the AFD program with whatever code library you're using for your specs and it'll work fine.
 
 ## Database Information
 

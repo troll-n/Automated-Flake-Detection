@@ -60,7 +60,7 @@ while in your venv from before. You may need to install the C++ redistributable 
 
 # Part 3: MySQL Database
 
-MySQL is the database of choice for this project. Head on over to [MySQL's community downloads](https://dev.mysql.com/downloads/installer/) and install MySQL with all reccomended packages. You're also going to want to grab the connector package by running this in your shell:
+MySQL is the database of choice for this project. Head on over to [MySQL's community downloads](https://dev.mysql.com/downloads/installer/) and install MySQL with all reccomended packages. You're also going to want to grab the connector package so you can run SQL querys in python by running this in your shell (in your venv):
 
 ```shell
 pip install mysql-connector-python

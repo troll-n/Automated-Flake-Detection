@@ -21,6 +21,8 @@ from getpass import getpass
 
 # Strictly necessary functions
 
+
+
 def arg_parse() -> dict:
     """
     Parse arguments
