@@ -2,6 +2,7 @@
 Author: Patrick Kaczmarek
 Code that automates flake detection via microscope.
 This program should always be run in the 2DMatGMM venv, and expects you to have navigated the microscope to the top left corner of the chip.
+Please read GETTING_STARTED.md if you want to use this program.
 """
 from ctypes import WinDLL, create_string_buffer
 import argparse
