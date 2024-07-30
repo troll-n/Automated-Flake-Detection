@@ -72,6 +72,7 @@ if realhw:
 
     cmd("controller.stage.goto-position 1000 1000")
     cmd("controller.stage.goto-position -1000 -1000")
+    cmd("controller.stage.goto-position 0 0")
         
     # disconnect cleanly from controller
         
