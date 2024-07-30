@@ -41,9 +41,7 @@ image.get_buffer_size()
 image.get_pix_fmt()
 'RGB8'
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(FILE_DIR, 'Output')
-arrimg = image.copy_image_data()
-cv2.imwrite(os.path.join(OUT_DIR, 'testimage.jpg'), arrimg)
+image.save_png(os.path.join(FILE_DIR, 'testimage4.png'))
 # cleanup
 camera.deinit_cam()
 camera.release()
