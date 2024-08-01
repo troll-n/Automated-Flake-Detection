@@ -4,7 +4,7 @@ Code that automates flake detection via microscope.
 This program should always be run in the 2DMatGMM venv, and expects you to have navigated the microscope to the top left corner of the chip.
 Please read GETTING_STARTED.md if you want to use this program.
 """
-from ctypes import WinDLL, create_string_buffer
+
 import argparse
 import json
 import os
@@ -16,14 +16,18 @@ import numpy as np
 from demo.demo_functions import visualise_flakes
 from GMMDetector import MaterialDetector
 
+# stage
+from ctypes import WinDLL, create_string_buffer
+
+# database
 from mysql.connector import Error, connect
 from getpass import getpass
-# libs for the stage and camera?
+
+# Blackfly camera
+from rotpy.system import SpinSystem
+from rotpy.camera import CameraList
 
 # Strictly necessary functions
-
-
-
 def arg_parse() -> dict:
     """
     Parse arguments
@@ -42,8 +46,8 @@ def arg_parse() -> dict:
     # fmt: on
     return vars(parser.parse_args())
 
+# Some constants
 args = arg_parse()
-
 rx = create_string_buffer(1000)
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 sdkpath = os.path.join(FILE_DIR, "..", "PriorSDK", "x64", "PriorScientificSDK.dll")
@@ -131,6 +135,13 @@ SIZE_THRESHOLD = args["size"]
 # PREP PHASE
 
 # Initialize camera, stage, etc. as necessary
+
+# initializes camera
+system = SpinSystem()
+cameras = CameraList.create_from_system(system, True, True)
+camera = cameras.create_camera_by_serial('23309234') # camera serial ###
+camera.init_cam()
+camera.camera_nodes.PixelFormat.set_node_value_from_str('BGR8') #converts better to np array 
 
 # loads up the contrast dictionary for whatever material we want
 with open(os.path.join(CONTRAST_PATH_ROOT, f"{MATERIAL}_GMM.json")) as f:
