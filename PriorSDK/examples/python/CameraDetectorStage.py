@@ -47,6 +47,11 @@ def scmd(msg):
     input("Press ENTER to continue...")
     return ret, rx.value.decode()
 
+def sGoTo(coord):
+    
+    scmd("controller.stage.goto-position %d %d" % (coord[0], coord[1]))
+    return
+
 ret = SDKPrior.PriorScientificSDK_Initialise()
 if ret:
     print(f"Error initialising {ret}")
@@ -101,49 +106,34 @@ model = MaterialDetector(
 # list of places to send the stage
 coords = []
 
-
+print("Connecting...")
+scmd("controller.connect 3")
+# substitute 3 with your com port Id
 for coord in coords:
-    print("Connecting...")
-    scmd("controller.connect 3")
-    # substitute 3 with your com port Id
-        
 
-    scmd("controller.stage.goto-position -1000 -1000")
+    sGoTo(coord)
+    
+    # obtain an image
+    camera.begin_acquisition()
+    image_cam = camera.get_next_image()
+    image = image_cam.deep_copy_image(image_cam)
+    image_cam.release()
+    camera.end_acquisition()
+    # make the image a numpy array
+    jpeg_path = os.path.join(IN_DIR, imgname)
+    image.save_jpeg(jpeg_path)
+    imgnp = cv2.imread(jpeg_path) # need a better system than this
 
-    scmd("controller.stage.goto-position 1000 1000")
-    scmd("controller.stage.goto-position -1000 -1000")
-    scmd("controller.stage.goto-position 0 0")
-        
-    # disconnect cleanly from controller
-        
+    flakes = model(imgnp)
+    print(flakes)
+    print("Flake list length: ", flakes.shape)
 
-else:
-    input("Press ENTER to continue...")
-
-cmd("controller.disconnect")
-
-# obtain an image
-camera.begin_acquisition()
-image_cam = camera.get_next_image()
-image = image_cam.deep_copy_image(image_cam)
-image_cam.release()
-camera.end_acquisition()
-
-
-# make the image a numpy array
-jpeg_path = os.path.join(IN_DIR, imgname)
-image.save_jpeg(jpeg_path)
-imgnp = cv2.imread(jpeg_path) # need a better system than this
-
-flakes = model(imgnp)
-print(flakes)
-print("Flake list length: ", flakes.shape)
-
-# save whatever
-# 
-image_overlay = visualise_flakes(flakes, imgnp, 0.8)
-# saves the image
-cv2.imwrite(os.path.join(OUT_DIR, imgname), image_overlay)
+    # save whatever
+    # 
+    image_overlay = visualise_flakes(flakes, imgnp, 0.8)
+    # saves the image
+    cv2.imwrite(os.path.join(OUT_DIR, imgname), image_overlay)
+scmd("controller.disconnect")
 
 # cleanup
 camera.deinit_cam()
