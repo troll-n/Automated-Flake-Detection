@@ -81,7 +81,7 @@ input("Press ENTER to continue...")
 MATERIAL = "Graphene"
 SIZE_THRESHOLD = 200
 STD_THRESHOLD = 5
-imgname = "p5c80.jpg"
+genname = "stagetest2"
 
 # loads up the contrast dictionary for whatever material we want
 with open(os.path.join(CONTRAST_PATH_ROOT, f"Graphene_GMM.json")) as f:
@@ -104,13 +104,16 @@ model = MaterialDetector(
 )
 
 # list of places to send the stage
-coords = []
+coords = [(0,0), (2000, 2000), (100,100), (-2000, -2000), (0,0)]
 
 print("Connecting...")
 scmd("controller.connect 3")
 # substitute 3 with your com port Id
+i = 0
 for coord in coords:
 
+    coordstr = "("  +str(coord[0]) + "," + str(coord[1]) + ")"
+    imgname = genname + str(i)  + "at" + coordstr + ".jpg"
     sGoTo(coord)
     
     # obtain an image
@@ -133,6 +136,7 @@ for coord in coords:
     image_overlay = visualise_flakes(flakes, imgnp, 0.8)
     # saves the image
     cv2.imwrite(os.path.join(OUT_DIR, imgname), image_overlay)
+    i = i + 1
 scmd("controller.disconnect")
 
 # cleanup

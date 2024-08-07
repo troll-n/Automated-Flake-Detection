@@ -27,7 +27,7 @@ IN_DIR = os.path.join(FILE_DIR, "Input")
 MATERIAL = "Graphene"
 SIZE_THRESHOLD = 200
 STD_THRESHOLD = 5
-imgname = "p5c80.jpg"
+imgname = "p5c80bus.jpg"
 
 # loads up the contrast dictionary for whatever material we want
 with open(os.path.join(CONTRAST_PATH_ROOT, f"Graphene_GMM.json")) as f:
