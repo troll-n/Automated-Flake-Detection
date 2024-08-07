@@ -44,6 +44,8 @@ pip install -e .
 ```
 # Part 2: Hardware-related Installs
 
+Most of the python installs are already covered under the 2DMatGMM package since it installs a lot of dependencies, but just to cover all bases you should still run throught the following steps.
+
 ## Prior ProScan III
 
 We already have the PriorSDK module implemented in this codebase, but one still needs to install the Prior driver. Luckily, Prior's software isn't all that bad and takes about 2 minutes to install. This install has been tested on a 64 bit Windows computer.
