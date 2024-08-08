@@ -1,0 +1,2 @@
+Encoders connected, fit = 0 enabled = 0
+Encoders disconnected, fit = 0 enabled = 0
