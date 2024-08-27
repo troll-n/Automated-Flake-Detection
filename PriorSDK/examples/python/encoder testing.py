@@ -81,7 +81,7 @@ input("Press ENTER to continue...")
 
 if encoders:
     print("Connecting...")
-    cmd("controller.connect 3")
+    cmd("controller.connect 5")
     # substitute 3 with your com port Id
     fit = retCmd("controller.stage.encoder.xy.fitted.get")
     print("return value for fitted: " + str(fit))
