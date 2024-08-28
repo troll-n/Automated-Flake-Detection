@@ -13,7 +13,7 @@ import sys
 import cv2
 import numpy as np
 
-from demo.demo_functions import visualise_flakes
+from Utils.misc_functions import visualise_flakes
 from GMMDetector import MaterialDetector
 
 # stage
