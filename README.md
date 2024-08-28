@@ -52,7 +52,7 @@ AutoFlakeDetect
 | ----Chip {chip_id} (etc)
 | ------Flake {flake_id} (etc)
 
-Chips that have been discarded can have their directory under Output as well as all of their sub-directories deleted; just keep in mind that this doesn't automatically drop them from the database
+Chips that have been discarded can have their directory under Output as well as all of their sub-directories deleted; just keep in mind that this doesn't automatically drop them from the database.
 
 ## Installation
 

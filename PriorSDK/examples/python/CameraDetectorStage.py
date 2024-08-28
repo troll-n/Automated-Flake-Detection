@@ -10,7 +10,7 @@ import sys
 import cv2
 import numpy as np
 
-from demo.demo_functions import visualise_flakes
+from Utils.misc_functions import visualise_flakes
 from GMMDetector import MaterialDetector
 
 import time
@@ -81,7 +81,7 @@ input("Press ENTER to continue...")
 MATERIAL = "Graphene"
 SIZE_THRESHOLD = 200
 STD_THRESHOLD = 5
-genname = "stagetest2"
+genname = "stagetest0"
 
 # loads up the contrast dictionary for whatever material we want
 with open(os.path.join(CONTRAST_PATH_ROOT, f"Graphene_GMM.json")) as f:
@@ -107,7 +107,7 @@ model = MaterialDetector(
 coords = [(0,0), (2000, 2000), (100,100), (-2000, -2000), (0,0)]
 
 print("Connecting...")
-scmd("controller.connect 3")
+scmd("controller.connect 5")
 # substitute 3 with your com port Id
 i = 0
 for coord in coords:

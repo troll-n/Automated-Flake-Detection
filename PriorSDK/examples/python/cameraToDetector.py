@@ -9,7 +9,7 @@ import os
 import cv2
 import numpy as np
 
-from demo.demo_functions import visualise_flakes
+from Utils.misc_functions import visualise_flakes
 from GMMDetector import MaterialDetector
 
 import time
@@ -27,7 +27,7 @@ IN_DIR = os.path.join(FILE_DIR, "Input")
 MATERIAL = "Graphene"
 SIZE_THRESHOLD = 200
 STD_THRESHOLD = 5
-imgname = "p5c80bus.jpg"
+imgname = "new.jpg"
 
 # loads up the contrast dictionary for whatever material we want
 with open(os.path.join(CONTRAST_PATH_ROOT, f"Graphene_GMM.json")) as f:

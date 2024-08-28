@@ -28,6 +28,10 @@ python AutoFlakeDetect/autoFlakeDetector.py --min_confidence 0.75 --chip_x 2.5 -
 
 ```
 Note that all arguments are optional; if you wanted to put in a chip of graphene that just so happens to be 10mm by 10mm and wanted all flakes with a confidence statistic greater than 50%, you could just call the program with no arguments.
+
+One should also take care ensure that the microscope is currently aimed at the top left corner of the chip. We plan on adding computer vision capabilities to the program such that it can autodetect where the chip is on the stage, but for now it's more about making sure the program can accurately and quickly find a flake. Thus, give us (the gremlins in the computer runnning the code for you) a hand by aligning the chip properly.
+
+
 ## Getting Results
 
 Currently, the only way to get results from the program is to ask for it manually using queries to the AFD_db database. We plan on making the UI interface more friendly by introducing a python notebook to do it all for you, but for now that's it.
