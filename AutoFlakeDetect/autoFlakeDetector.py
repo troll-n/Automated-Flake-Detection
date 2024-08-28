@@ -22,6 +22,7 @@ from ctypes import WinDLL, create_string_buffer
 # database
 from mysql.connector import Error, connect
 from getpass import getpass
+from AutoFlakeDetect.afd_chipmap import chipmap
 
 # Blackfly camera
 from rotpy.system import SpinSystem
