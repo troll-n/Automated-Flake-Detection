@@ -60,7 +60,7 @@ camera.end_acquisition()
 
 
 # make the image a numpy array
-jpeg_path = os.path.join(IN_DIR, imgname)
+jpeg_path = os.path.join(IN_DIR, "4.png")
 image.save_jpeg(jpeg_path)
 imgnp = cv2.imread(jpeg_path) # need a better system than this
 
