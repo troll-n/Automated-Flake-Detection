@@ -16,6 +16,8 @@ import numpy as np
 from Utils.misc_functions import visualise_flakes
 from GMMDetector import MaterialDetector
 
+from PIL import Image
+
 # stage
 from ctypes import WinDLL, create_string_buffer
 
@@ -58,7 +60,7 @@ if os.path.exists(sdkpath):
 else:
     raise RuntimeError("DLL could not be loaded.")
 
-# stage command:passes commands to the controller
+# stage command: passes commands to the controller
 def scmd(msg):
     print(msg)
     ret = SDKPrior.PriorScientificSDK_cmd(
@@ -121,6 +123,55 @@ def getFlakeCenterXY(flake) -> tuple:
     
     # insert conversion from pixels to whatever the x,y units are
     return (TL_XY[0] + 0, TL_XY[1] + 0) 
+
+
+
+def merge_images_right(arr1, arr2):
+    """
+    Merge two images into one, displayed as second right of first
+    Arguments:
+        param arr1: numpy array of first image
+        param arr2: numpy array of second image
+    Returns:
+        The merged image as a numpy array
+    """
+    image1 = Image.fromarray(arr1)
+    image2 = Image.fromarray(arr2)
+
+    (width1, height1) = image1.size
+    (width2, height2) = image2.size
+
+    result_width = width1 + width2
+    result_height = max(height1, height2)
+
+    result = Image.new('RGB', (result_width, result_height))
+    result.paste(im=image1, box=(0, 0))
+    result.paste(im=image2, box=(width1, 0))
+    return np.asarray(result)
+
+def merge_images_down(arr1, arr2):
+    """
+    Merge two images into one, displayed as second down of first
+    Arguments:
+        param arr1: numpy array of first image
+        param arr2: numpy array of second image
+    Returns:
+        The merged image as a numpy array
+    """
+    image1 = Image.fromarray(arr1)
+    image2 = Image.fromarray(arr2)
+
+    (width1, height1) = image1.size
+    (width2, height2) = image2.size
+
+    result_width = max(width1, width2)
+    result_height = height1 + height2
+
+    result = Image.new('RGB', (result_width, result_height))
+    result.paste(im=image1, box=(0, 0))
+    result.paste(im=image2, box=(0, height1))
+    return np.asarray(result)
+
 
 # Constants
 CONTRAST_PATH_ROOT = os.path.join(FILE_DIR, "..", "GMMDetector", "trained_parameters") # keep
@@ -198,10 +249,11 @@ flakes = []
 # the choice to do this rather than update the flake class is due to the fact that i don't want to mess with the internals of the classes that the model might be looking at.
 flakeXYList = []
 
-# go to top left with stage - may have to find it (?)
+# assumes wherever we're at is top left of our chip
+scmd("controller.stage.position.set 0 0")
 # may also need to figure out how to move the stage properly
 # set mag level to 2.5x
-# warm up model (?) Python is weird so it may be our best bet to make sure that time is a nonissue
+# warm up model (?)
 
 # SCANNING PHASE
 
