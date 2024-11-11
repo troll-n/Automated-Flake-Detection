@@ -1,5 +1,5 @@
 """
-Author: Patrick Kaczmarek
+Authored by Patrick Kaczmarek
 Code that automates flake detection via microscope.
 This program should always be run in the 2DMatGMM venv, and expects you to have navigated the microscope to the top left corner of the chip.
 Please read GETTING_STARTED.md if you want to use this program.
@@ -13,13 +13,13 @@ import sys
 import cv2
 import numpy as np
 
+# ML model
 from Utils.misc_functions import visualise_flakes
 from GMMDetector import MaterialDetector
 
-from PIL import Image
-
 # stage
 from ctypes import WinDLL, create_string_buffer
+import stage_wrapper
 
 # database
 from mysql.connector import Error, connect
@@ -29,6 +29,9 @@ from AutoFlakeDetect.afd_chipmap import chipmap
 # Blackfly camera
 from rotpy.system import SpinSystem
 from rotpy.camera import CameraList
+
+# Misc functions
+import img_merge as merge
 
 # Strictly necessary functions
 def arg_parse() -> dict:
@@ -51,126 +54,38 @@ def arg_parse() -> dict:
 
 # Some constants
 args = arg_parse()
-rx = create_string_buffer(1000)
+
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
-sdkpath = os.path.join(FILE_DIR, "..", "PriorSDK", "x64", "PriorScientificSDK.dll")
 
-if os.path.exists(sdkpath):
-    SDKPrior = WinDLL(sdkpath)
-else:
-    raise RuntimeError("DLL could not be loaded.")
-
-# stage command: passes commands to the controller
-def scmd(msg):
-    print(msg)
-    ret = SDKPrior.PriorScientificSDK_cmd(
-        sessionID, create_string_buffer(msg.encode()), rx
-    )
-    if ret:
-        print(f"Api error {ret}")
-    else:
-        print(f"OK {rx.value.decode()}")
-
-    input("Press ENTER to continue...")
-    return ret, rx.value.decode()
-
-ret = SDKPrior.PriorScientificSDK_Initialise()
-if ret:
-    print(f"Error initialising {ret}")
-    sys.exit()
-else:
-    print(f"Ok initialising {ret}")
+stage = stage_wrapper.Stage(FILE_DIR)
 
 
-ret = SDKPrior.PriorScientificSDK_Version(rx)
-print(f"dll version api ret={ret}, version={rx.value.decode()}")
+# def getTopLeftXY() -> tuple:
+#     """
+#     Gets the coordinates of the top left of whatever section of the chip the camera is looking at
 
+#     Returns:
+#         tuple: Tuple of the x,y coordinate of the top left pixel of the section, relative to global top left.
+#     """
+#     # getpos with sdk
+#     # 
+#     pass
 
-sessionID = SDKPrior.PriorScientificSDK_OpenNewSession()
-if sessionID < 0:
-    print(f"Error getting sessionID {ret}")
-else:
-    print(f"SessionID = {sessionID}")
+# def getFlakeCenterXY(flake) -> tuple:
+#     """
+#     Gets the coordinates of a flake of interest.
 
-
-ret = SDKPrior.PriorScientificSDK_cmd(
-    sessionID, create_string_buffer(b"dll.apitest 33 goodresponse"), rx
-)
-print(f"api response {ret}, rx = {rx.value.decode()}")
-input("Press ENTER to continue...")
-
-def getTopLeftXY() -> tuple:
-    """
-    Gets the coordinates of the top left of whatever section of the chip the camera is looking at
-
-    Returns:
-        tuple: Tuple of the x,y coordinate of the top left pixel of the section, relative to global top left.
-    """
-    # getpos with sdk
-    # 
-    pass
-
-def getFlakeCenterXY(flake) -> tuple:
-    """
-    Gets the coordinates of a flake of interest.
-
-    Returns:
-        tuple: Tuple of the x,y coordinate of the center pixel of the flake, relative to global top left.
-    """
-    TL_XY = getTopLeftXY()
-    # below is Flake class's native center attrb, measured in pixels, at 20x mag
-    local_center = flake["center"]
+#     Returns:
+#         tuple: Tuple of the x,y coordinate of the center pixel of the flake, relative to global top left.
+#     """
+#     TL_XY = getTopLeftXY()
+#     # below is Flake class's native center attrb, measured in pixels, at 20x mag
+#     local_center = flake["center"]
     
-    # insert conversion from pixels to whatever the x,y units are
-    return (TL_XY[0] + 0, TL_XY[1] + 0) 
+#     # insert conversion from pixels to whatever the x,y units are
+#     return (TL_XY[0] + 0, TL_XY[1] + 0) 
 
 
-
-def merge_images_right(arr1, arr2):
-    """
-    Merge two images into one, displayed as second right of first
-    Arguments:
-        param arr1: numpy array of first image
-        param arr2: numpy array of second image
-    Returns:
-        The merged image as a numpy array
-    """
-    image1 = Image.fromarray(arr1)
-    image2 = Image.fromarray(arr2)
-
-    (width1, height1) = image1.size
-    (width2, height2) = image2.size
-
-    result_width = width1 + width2
-    result_height = max(height1, height2)
-
-    result = Image.new('RGB', (result_width, result_height))
-    result.paste(im=image1, box=(0, 0))
-    result.paste(im=image2, box=(width1, 0))
-    return np.asarray(result)
-
-def merge_images_down(arr1, arr2):
-    """
-    Merge two images into one, displayed as second down of first
-    Arguments:
-        param arr1: numpy array of first image
-        param arr2: numpy array of second image
-    Returns:
-        The merged image as a numpy array
-    """
-    image1 = Image.fromarray(arr1)
-    image2 = Image.fromarray(arr2)
-
-    (width1, height1) = image1.size
-    (width2, height2) = image2.size
-
-    result_width = max(width1, width2)
-    result_height = height1 + height2
-
-    result = Image.new('RGB', (result_width, result_height))
-    result.paste(im=image1, box=(0, 0))
-    result.paste(im=image2, box=(0, height1))
-    return np.asarray(result)
 
 
 # Constants
@@ -250,7 +165,7 @@ flakes = []
 flakeXYList = []
 
 # assumes wherever we're at is top left of our chip
-scmd("controller.stage.position.set 0 0")
+stage.cmd("controller.stage.position.set 0 0")
 # may also need to figure out how to move the stage properly
 # set mag level to 2.5x
 # warm up model (?)
