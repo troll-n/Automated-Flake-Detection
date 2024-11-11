@@ -1,7 +1,7 @@
 build/
 *.egg-info
 __pycache__
-
+general_dataset
 # dont commit the results
 AutoFlakeDetect/Output/*
 
