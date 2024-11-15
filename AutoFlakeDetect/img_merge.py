@@ -1,6 +1,7 @@
 """
-Authored by Patrick Kaczmarek
-Library for merging images; used for creating maps of the chip's surface.
+Authored by Patrick Kaczmarek\n
+Library for merging images; used for creating maps of the chip's surface.\n
+Only right and down are strictly necessary for the purposes of this code.\n
 """
 
 import json
@@ -10,9 +11,6 @@ import sys
 import cv2
 import numpy as np
 from PIL import Image
-
-
-
 
 def right(arr1, arr2):
     """

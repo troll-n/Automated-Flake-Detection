@@ -1,6 +1,6 @@
 """
-Authored by Patrick Kaczmarek
-Library that wraps the stage commands up as an object
+Authored by Patrick Kaczmarek\n
+Library that wraps the stage commands up as an object\n
 """
 import argparse
 import json
@@ -16,6 +16,7 @@ class Stage:
     SDKPrior = ""
     rx = 0
     sessionID = ""
+    debug = False
 
     def __init__(self, FILE_DIR):
         self.sdkpath = os.path.join(FILE_DIR, "..", "PriorSDK", "x64", "PriorScientificSDK.dll")
@@ -48,10 +49,10 @@ class Stage:
             self.sessionID, create_string_buffer(b"dll.apitest 33 goodresponse"), self.rx
         )
         print(f"api response {ret}, rx = {self.rx.value.decode()}")
-        input("Press ENTER to continue...")
+        if self.debug: input("Press ENTER to continue...")
 
-    # stage command: passes commands to the controller
-    def cmd(self, msg):
+    # stage command: passes any commands to the controller
+    def cmd(self, msg) -> tuple:
         print(msg)
         ret = self.SDKPrior.PriorScientificSDK_cmd(
             self.sessionID, create_string_buffer(msg.encode()), self.rx
@@ -61,5 +62,23 @@ class Stage:
         else:
             print(f"OK {self.rx.value.decode()}")
 
-        input("Press ENTER to continue...")
+        if self.debug: input("Press ENTER to continue...")
         return ret, self.rx.value.decode()
+    
+    # stage command but for if you expect a return value
+    def retCmd(self, msg):
+        print(msg)
+        ret = self.SDKPrior.PriorScientificSDK_cmd(
+            self.sessionID, create_string_buffer(msg.encode()), self.rx
+        )
+        return self.rx.value.decode()
+      
+    # wrapper function for movement to make loops legible elsewhere
+    def GoTo(self, coord) -> tuple:
+        return self.cmd("controller.stage.goto-position %d %d" % (coord[0], coord[1]))
+    # ditto but for focusing with z axis
+    def Z_GoTo(self, coord) -> tuple:
+        return self.cmd("controller.z.goto-position %d" % (coord))
+    # Set the value of debug; by default false
+    def debug(self, val):
+        self.debug = val

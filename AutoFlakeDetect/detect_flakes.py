@@ -19,7 +19,7 @@ from GMMDetector import MaterialDetector
 
 # stage
 from ctypes import WinDLL, create_string_buffer
-import stage_wrapper
+from stage_wrapper import Stage
 
 # database
 from mysql.connector import Error, connect
@@ -57,7 +57,7 @@ args = arg_parse()
 
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-stage = stage_wrapper.Stage(FILE_DIR)
+
 
 
 # def getTopLeftXY() -> tuple:
@@ -101,14 +101,19 @@ SIZE_THRESHOLD = args["size"]
 
 # PREP PHASE
 
-# Initialize camera, stage, etc. as necessary
+# Initializing stage - see stage_wrapper.py for more info
 
-# initializes camera
+stage = Stage(FILE_DIR)
+stage.debug(True)
+
+# Initializing camera
 system = SpinSystem()
 cameras = CameraList.create_from_system(system, True, True)
 camera = cameras.create_camera_by_serial('23309234') # camera serial ###
 camera.init_cam()
 camera.camera_nodes.PixelFormat.set_node_value_from_str('BGR8') #converts better to np array 
+
+# Initializing GMM model
 
 # loads up the contrast dictionary for whatever material we want
 with open(os.path.join(CONTRAST_PATH_ROOT, f"{MATERIAL}_GMM.json")) as f:
@@ -125,7 +130,7 @@ model = MaterialDetector(
     used_channels="BGR",
 )
 
-# insert chip into db
+# Entering new chip into db - currently ints, but I can change to strings if preferred
 c_id = 0
 try:
     with connect(
