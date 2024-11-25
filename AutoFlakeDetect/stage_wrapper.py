@@ -17,6 +17,7 @@ class Stage:
     rx = 0
     sessionID = ""
     debug = False
+    firstCmd = True
 
     def __init__(self, FILE_DIR):
         self.sdkpath = os.path.join(FILE_DIR, "..", "PriorSDK", "x64", "PriorScientificSDK.dll")
@@ -49,6 +50,18 @@ class Stage:
             self.sessionID, create_string_buffer(b"dll.apitest 33 goodresponse"), self.rx
         )
         print(f"api response {ret}, rx = {self.rx.value.decode()}")
+        self.firstCmd = False
+        connect = "controller.connect 5"
+        print(connect)
+        ret = self.SDKPrior.PriorScientificSDK_cmd(
+            self.sessionID, create_string_buffer(connect.encode()), self.rx
+        )
+        if ret:
+            print(f"Api error {ret}")
+            assert(False)
+        else:
+            print(f"OK {self.rx.value.decode()}")
+
         if self.debug: input("Press ENTER to continue...")
 
     # stage command: passes any commands to the controller

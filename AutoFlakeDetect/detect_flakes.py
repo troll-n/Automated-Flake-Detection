@@ -24,7 +24,7 @@ from stage_wrapper import Stage
 # database
 from mysql.connector import Error, connect
 from getpass import getpass
-from AutoFlakeDetect.afd_chipmap import chipmap
+from AutoFlakeDetect.image_stage import chipmap
 
 # Blackfly camera
 from rotpy.system import SpinSystem

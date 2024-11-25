@@ -64,7 +64,7 @@ input("Press ENTER to continue...")
 
 if realhw:
     print("Connecting...")
-    cmd("controller.connect 3")
+    cmd("controller.connect 5")
     # substitute 3 with your com port Id
         
 
