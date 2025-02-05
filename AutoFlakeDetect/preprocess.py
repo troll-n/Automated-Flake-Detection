@@ -16,22 +16,27 @@ def SharpandContrast(arr) :
 
 
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
-IN_DIR = os.path.join(FILE_DIR, "test") \
+IN_DIR = os.path.join(FILE_DIR, "..", "contrast_increase", "data") 
 
-"""jpeg_name = "5.jpg"
+"""jpeg_name = "bot.jpg"
 jpeg_path = os.path.join(IN_DIR, jpeg_name)
 
 img = Image.open(jpeg_path)
 sharp = ImageEnhance.Sharpness(img)
 contrast = ImageEnhance.Contrast(img)
 """
+jpeg_name = "weird.jpg"
+jpeg_path = os.path.join(IN_DIR, jpeg_name)
+img = Image.open(jpeg_path)
+sharp = ImageEnhance.Sharpness(img)
+contrast = ImageEnhance.Contrast(img)
+contrast.enhance(2).save(jpeg_path)
 
-
-for i in range(1,6):
-    jpeg_name = "{}.jpg".format(i)
+"""for i in range(16,58):
+    jpeg_name = "tl{}.jpg".format(i)
     jpeg_path = os.path.join(IN_DIR, jpeg_name)
     img = Image.open(jpeg_path)
     sharp = ImageEnhance.Sharpness(img)
     contrast = ImageEnhance.Contrast(img)
-    contrast.enhance(2).save(jpeg_path)
+    contrast.enhance(2).save(jpeg_path)"""
 
