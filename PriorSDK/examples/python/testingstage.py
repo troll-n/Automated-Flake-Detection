@@ -1,3 +1,10 @@
+"""
+Author: Patrick Kaczmarek
+Basic stage testing function.
+Ensure the controller is turned on before running this program, and that there are no obstructions to the stage.
+Check the controller to ensure that the stage goes to where you expect.
+"""
+
 from ctypes import WinDLL, create_string_buffer
 import os
 import sys
@@ -64,7 +71,7 @@ input("Press ENTER to continue...")
 
 if realhw:
     print("Connecting...")
-    cmd("controller.connect 5")
+    cmd("controller.connect 3")
     # substitute 3 with your com port Id
         
 
