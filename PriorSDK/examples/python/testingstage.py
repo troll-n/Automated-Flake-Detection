@@ -3,6 +3,7 @@ Author: Patrick Kaczmarek
 Basic stage testing function.
 Ensure the controller is turned on before running this program, and that there are no obstructions to the stage.
 Check the controller to ensure that the stage goes to where you expect.
+Works as of 5/14
 """
 
 from ctypes import WinDLL, create_string_buffer
@@ -74,7 +75,7 @@ if realhw:
     cmd("controller.connect 3")
     # substitute 3 with your com port Id
         
-
+    cmd("controller.stage.position.set 0 0")
     cmd("controller.stage.goto-position -1000 -1000")
 
     cmd("controller.stage.goto-position 1000 1000")

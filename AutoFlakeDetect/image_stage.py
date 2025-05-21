@@ -115,10 +115,10 @@ def chipmap(stage, mag, chip_id, chip_x, chip_y) -> str:
     return filename
 
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
-SAVE_DIR = os.path.join(FILE_DIR, "4xtest_images")
+SAVE_DIR = os.path.join(FILE_DIR, "10xtest_images")
 system = SpinSystem()
 cameras = CameraList.create_from_system(system, True, True)
-camera = cameras.create_camera_by_serial('23309234') # camera serial ###
+camera = cameras.create_camera_by_serial('22580849') # camera serial ###
 camera.init_cam()
 camera.camera_nodes.PixelFormat.set_node_value_from_str('BGR8') #converts better to np array
 
@@ -128,7 +128,7 @@ stage.debug(False)
 # POINT CAMERA AT TOP LEFT OF CHIP BEFORE RUNNING THIS PROGRAM!
 # Also note that one cannot run the SpinNaker porgram and this one at the same time.
 stage.cmd("controller.stage.position.set 0 0")
-image_chip(stage, camera, SAVE_DIR, 4, 0, 9.107, 10.461)
+image_chip(stage, camera, SAVE_DIR, 10, 0, 6, 7)
 
 # cleanup
 camera.deinit_cam()

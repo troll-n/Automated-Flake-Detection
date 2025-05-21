@@ -4,7 +4,9 @@ __pycache__
 # dont commit the results
 AutoFlakeDetect/Output/*
 AutoFlakeDetect/4xtest_images/*
+AutoFlakeDetect/10xtest_images/*
 AutoFlakeDetect/20xtest_images/*
+NativeG_dataset
 archived_datasets
 # Dont commit VSCode settings
 .vscode

@@ -89,7 +89,7 @@ with open(os.path.join(CONTRAST_PATH_ROOT, f"Graphene_GMM.json")) as f:
 
 system = SpinSystem()
 cameras = CameraList.create_from_system(system, True, True)
-camera = cameras.create_camera_by_serial('23309234') # camera serial ###
+camera = cameras.create_camera_by_serial('22580849') # camera serial ###
 camera.init_cam()
 camera.camera_nodes.PixelFormat.set_node_value_from_str('BGR8') #converts better to np array
 
@@ -107,7 +107,8 @@ model = MaterialDetector(
 coords = [(0,0), (2000, 2000), (100,100), (-2000, -2000), (0,0)]
 
 print("Connecting...")
-scmd("controller.connect 5")
+scmd("controller.connect 3")
+scmd("controller.stage.position.set 0 0")
 # substitute 3 with your com port Id
 i = 0
 for coord in coords:

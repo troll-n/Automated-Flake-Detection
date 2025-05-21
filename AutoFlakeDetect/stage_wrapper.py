@@ -51,7 +51,7 @@ class Stage:
         )
         print(f"api response {ret}, rx = {self.rx.value.decode()}")
         self.firstCmd = False
-        connect = "controller.connect 5"
+        connect = "controller.connect 3"
         print(connect)
         ret = self.SDKPrior.PriorScientificSDK_cmd(
             self.sessionID, create_string_buffer(connect.encode()), self.rx
