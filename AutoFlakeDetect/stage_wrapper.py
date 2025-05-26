@@ -66,21 +66,22 @@ class Stage:
 
     # stage command: passes any commands to the controller
     def cmd(self, msg) -> tuple:
-        print(msg)
+        if self.debug: print(msg)
         ret = self.SDKPrior.PriorScientificSDK_cmd(
             self.sessionID, create_string_buffer(msg.encode()), self.rx
         )
         if ret:
             print(f"Api error {ret}")
+            assert(False)
         else:
-            print(f"OK {self.rx.value.decode()}")
+            if self.debug: print(f"OK {self.rx.value.decode()}")
 
         if self.debug: input("Press ENTER to continue...")
         return ret, self.rx.value.decode()
     
     # stage command but for if you expect a return value
     def retCmd(self, msg):
-        print(msg)
+        if self.debug: print(msg)
         ret = self.SDKPrior.PriorScientificSDK_cmd(
             self.sessionID, create_string_buffer(msg.encode()), self.rx
         )
