@@ -457,11 +457,11 @@ camera.camera_nodes.PixelFormat.set_node_value_from_str('BGR8') #converts better
 
 
 stage = Stage(FILE_DIR)
-stage.debug(False)
+stage.debug(True)
 # POINT CAMERA AT TOP LEFT OF CHIP BEFORE RUNNING THIS PROGRAM!
 # Also note that one cannot run the SpinNaker porgram and this one at the same time.
-stage.cmd("controller.stage.position.set 0 0")
-map_chip(stage, camera, SAVE_DIR, 4, 0, 17.5, 10)
+#stage.cmd("controller.stage.position.set 0 0")
+map_chip(stage, camera, SAVE_DIR, 4, 0, 5.8, 6.1)
 # cleanup
 camera.deinit_cam()
 camera.release()

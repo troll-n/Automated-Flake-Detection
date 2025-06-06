@@ -10,13 +10,22 @@ from ctypes import WinDLL, create_string_buffer
 import os
 import sys
 
+# try to connect to priorSDK (for stage control)
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 path = os.path.join(FILE_DIR, "..", "..", "x64", "PriorScientificSDK.dll")
 
 if os.path.exists(path):
     SDKPrior = WinDLL(path)
 else:
-    raise RuntimeError("DLL could not be loaded.")
+    raise RuntimeError("SDK DLL could not be loaded.")
+
+path = "C:\Program Files\Prior Scientific\Prior Software\Prior.dll"
+
+# try to connect to prior legacy (for stage control)
+if os.path.exists(path):
+    LegacyPrior = WinDLL(path)
+else:
+    raise RuntimeError("Legacy DLL could not be loaded.")
 
 rx = create_string_buffer(1000)
 realhw = True
@@ -76,14 +85,12 @@ if realhw:
     # substitute 3 with your com port Id
         
     cmd("controller.stage.position.set 0 0")
-    cmd("controller.stage.goto-position -1000 -1000")
+    cmd("controller.stage.goto-position -25000 -25000")
 
     cmd("controller.stage.goto-position 1000 1000")
     cmd("controller.stage.goto-position -1000 -1000")
     cmd("controller.stage.goto-position 0 0")
-        
-    # disconnect cleanly from controller
-        
+
 
 else:
     input("Press ENTER to continue...")
