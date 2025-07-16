@@ -356,6 +356,130 @@ def map_chip(stage, camera, SAVE_DIR, mag, chip_id, chip_x, chip_y):
     stage.GoTo((0,0))
     return (len(xToVisit),len(yToVisit))
 
+def scan_chip(stage, camera, SAVE_DIR, chip_id, chip_x, chip_y):
+    """
+    Scans the loaded chip with a snaking algorithm. Magnification is always 20x
+
+    Arguments:
+        stage: Our stage object
+        camera: Our SpinSystem Camera object
+        SAVE_DIR: Directory to save images to
+        chip_id: int, ID of the chip, important for database storage
+        chip_x: float, x-dimension of the chip. mm
+        chip_y: float, y-dimension of the chip, mm
+    Requires:
+        0,0 set for stage (done in detect_flakes), top left
+    Ensures:
+        Mapped chip is saved in proper location as a jpg - read README.md if confused
+    Returns:
+        (cap_x,cap_y)
+    """
+
+    # defaults (throws error if not changed)
+
+    # General prefix that we'll use for this chip 
+    # Filename we'll use for this chip map 
+    filename = "map_" + str(chip_id) + ".jpg"
+    mappath = os.path.join(SAVE_DIR, filename)
+    
+    prefix = "ch" + str(chip_id) + "_"
+    start = time.time()
+    mag = 20
+
+    # Fetching the parameters necessary for imaging; see function for more details
+    (microns_per_x_capture,microns_per_y_capture,
+     micron_x_shift_per_col,micron_y_shift_per_row) = fetch_parameters(mag)
+    
+    # Below in MICRONS (prior microscope does it in microns)
+    marginx = int(microns_per_x_capture / 2)
+    marginy = int(microns_per_y_capture / 2)
+    cap_x = int(chip_x * 1000 + (mag / 2) * marginx)
+    cap_y = int(chip_y * 1000 + (mag / 2) * marginy)
+    count = 0
+    # x coords to visit
+    xToVisit = range(-marginx, cap_x, microns_per_x_capture)
+    xCount = 0
+    # y coords to visit
+    yToVisit = range(-marginy, cap_y,microns_per_y_capture)
+    yCount = 0
+    
+    if(len(xToVisit) * len(yToVisit) > 200):
+        print("""Warning: You are about to make a very massive image, perhaps due to having a unnecessarily high magnification setting or loading a particularly large chip. \n
+              This program will take a long time to complete, and even if it does, the finished map image may fail to be saved due to limitations in the library this program uses.\n
+              """)
+        if (input("Enter N to exit program, or anything else to continue anyways: ") == "N"):
+            assert(False)
+
+    img_map = 0
+
+    for x in xToVisit:
+        # make a new stripe that lives in this scope
+        img_stripe = 0
+        adapted_yToVisit = 0
+        if xCount % 2 == 0:
+            adapted_yToVisit = yToVisit
+            yCount = 0
+        else:
+            adapted_yToVisit = reversed(yToVisit)
+            yCount = len(yToVisit) - 1
+        is_x_Even = (xCount % 2 == 0)
+        is_y_Start = True
+        for y in adapted_yToVisit:
+            
+            count+=1 #can't believe ++ isn't a thing in python
+
+            # move to next place desired to image
+            busyStatus = int(stage.retCmd( "controller.stage.busy.get"))
+            while busyStatus != 0:
+                time.sleep(0.05)
+                busyStatus = int(stage.retCmd("controller.stage.busy.get"))
+
+            stage.GoTo((-(x+micron_x_shift_per_col*yCount),-(y+micron_y_shift_per_row*xCount)))
+
+            while busyStatus != 0:
+                time.sleep(0.05)
+                busyStatus = int(stage.retCmd("controller.stage.busy.get"))
+            # wait for a little
+            
+            if (is_y_Start):
+                # wait longer because side to side movement takes longer than up and down
+                time.sleep(0.25)
+            else:
+                time.sleep(0.2)
+            
+            # obtain an image
+            camera.begin_acquisition()
+            image_cam = camera.get_next_image()
+            curr_image = image_cam.deep_copy_image(image_cam)
+            image_cam.release()
+            camera.end_acquisition()
+
+            # save it
+            imgname = prefix + str(xCount) + "_" + str(yCount) + ".jpg"
+            jpeg_path = os.path.join(SAVE_DIR, imgname)
+            curr_image.save_jpeg(jpeg_path)
+            
+            # open the image as a PIL image; i know it's silly but rotpy has bad documentation and i can't figure out how to directly convert it in memory
+            with Image.open(jpeg_path) as im:
+                # look for flakes
+                pass
+            # change y-iterator the right way 
+            if (is_x_Even):
+                yCount+=1
+            else:
+                yCount-=1
+        xCount+=1
+    
+    #don't forget to save the map!
+    img_map.save(mappath)
+    print("total images taken:", count)
+    print("to complete, function took the following amount of seconds:", int(time.time() - start))
+
+    #return to where we started off because that's nice
+    stage.GoTo((0,0))
+    return (len(xToVisit),len(yToVisit))
+
+
 def fetch_parameters(mag) -> tuple[int,int,int,int]:
     """
     Given mgnification level, outputs parameters needed for imaging
@@ -377,6 +501,7 @@ def fetch_parameters(mag) -> tuple[int,int,int,int]:
     # Necessary due to backlash
     micron_x_shift_per_col = 0
     micron_y_shift_per_row = 0
+    # All of these should be double checked given the dumbassery that's been going on with the stage.
     if mag == 4:
         # optimized
         microns_per_x_capture = 2100 
@@ -401,51 +526,6 @@ def fetch_parameters(mag) -> tuple[int,int,int,int]:
         microns_per_x_capture = int(slopex * mag)
         microns_per_y_capture = int(slopey * mag)
     return (microns_per_x_capture, microns_per_y_capture, micron_x_shift_per_col, micron_y_shift_per_row)
-
-def chipmap(stage, camera, SAVE_DIR, mag, chip_id, chip_x, chip_y) -> str:
-    """
-    Map the loaded chip at magx magnification
-
-    Arguments:
-        stage: Our Prior stage object
-        camera: Our SpinSystem Camera object
-        mag: Magnification level
-        chip_id: int, ID of the chip, important for database storage
-        chip_x: float, x-dimension of the chip. mm
-        chip_y: float, y-dimension of the chip, mm
-    Requires:
-        0,0 set for stage (done in detect_flakes), top left
-    Ensures:
-        Mapped chip is saved in proper location as a jpg - read README.md if confused
-    Returns:
-        filename: Filename of the mapped chip.
-    """
-    # Filename we'll use for this chip map 
-    filename = "map_" + str(chip_id) + ".jpg"
-    mappath = os.path.join(SAVE_DIR, filename)
-    # First, image the chip and put it into a temporary directory, get dims (img#ximg#)
-    dims = image_chip(stage, camera, SAVE_DIR, mag, chip_id, chip_x, chip_y)
-    # We have now imaged all of the chip, and need to merge ts
-    prefix = "ch" + str(chip_id) + "_"
-    # Merging time!
-    # actual img id. starts at 1 because need to set up
-    count = 1
-    # count of stripes down; basically all images of the same y-coord
-    count_downstripes = -1
-    while count_downstripes < dims[0]:
-        if (count+1) % dims[1]  == 0:  # special case for if it's the first image to get merged
-            #we're done with the old stripe, make a new stripe
-            #copy topmost image
-
-            count_downstripes+=1
-            mg.imgDown()
-        else: 
-            pass
-        count+=1
-    # figure out frequency to take images at 4x?
-    # figure out speed to set controller to
-    
-    return filename
 
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 SAVE_DIR = os.path.join(FILE_DIR, "4xtest_images")
