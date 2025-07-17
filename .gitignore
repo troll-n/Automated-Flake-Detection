@@ -8,5 +8,7 @@ AutoFlakeDetect/10xtest_images/*
 AutoFlakeDetect/20xtest_images/*
 NativeG_dataset
 archived_datasets
+bad_UltraTrimmed_Graphene
+UltraTrimmed_Graphene
 # Dont commit VSCode settings
 .vscode

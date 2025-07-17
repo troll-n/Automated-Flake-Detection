@@ -254,8 +254,8 @@ def map_chip(stage, camera, SAVE_DIR, mag, chip_id, chip_x, chip_y):
     # Below in MICRONS (prior microscope does it in microns)
     marginx = int(microns_per_x_capture / 2)
     marginy = int(microns_per_y_capture / 2)
-    cap_x = int(chip_x * 1000 + (mag / 2) * marginx)
-    cap_y = int(chip_y * 1000 + (mag / 2) * marginy)
+    cap_x = int(chip_x * 100 + (mag / 2) * marginx)
+    cap_y = int(chip_y * 100 + (mag / 2) * marginy)
     count = 0
     # x coords to visit
     xToVisit = range(-marginx, cap_x, microns_per_x_capture)
@@ -480,6 +480,7 @@ def scan_chip(stage, camera, SAVE_DIR, chip_id, chip_x, chip_y):
     return (len(xToVisit),len(yToVisit))
 
 
+
 def fetch_parameters(mag) -> tuple[int,int,int,int]:
     """
     Given mgnification level, outputs parameters needed for imaging
@@ -504,20 +505,20 @@ def fetch_parameters(mag) -> tuple[int,int,int,int]:
     # All of these should be double checked given the dumbassery that's been going on with the stage.
     if mag == 4:
         # optimized
-        microns_per_x_capture = 2100 
-        microns_per_y_capture = 1767 
-        micron_x_shift_per_col = -42 
-        micron_y_shift_per_row = 42 
+        microns_per_x_capture = 1650 # original 2100
+        microns_per_y_capture = 1028 # original 1767
+        micron_x_shift_per_col = 24 # original -42
+        micron_y_shift_per_row = -40 # original 42
     elif mag == 10:
         # not optimized
         microns_per_x_capture = 840 
         microns_per_y_capture = 750
     elif mag == 20:
         # optimized
-        microns_per_x_capture = 420 
-        microns_per_y_capture = 350 
-        micron_x_shift_per_col = -7 
-        micron_y_shift_per_row = 9
+        microns_per_x_capture = 328 
+        microns_per_y_capture = 210 
+        micron_x_shift_per_col = 5
+        micron_y_shift_per_row = -8
     else:
         #haven't determined it yet, I'll just pretend it's roughly linear
         print("Estimating necessary microns needed per capture (this may be choppy)\n")
@@ -537,11 +538,11 @@ camera.camera_nodes.PixelFormat.set_node_value_from_str('BGR8') #converts better
 
 
 stage = Stage(FILE_DIR)
-stage.debug(True)
+stage.debug(False)
 # POINT CAMERA AT TOP LEFT OF CHIP BEFORE RUNNING THIS PROGRAM!
 # Also note that one cannot run the SpinNaker porgram and this one at the same time.
-#stage.cmd("controller.stage.position.set 0 0")
-map_chip(stage, camera, SAVE_DIR, 4, 0, 5.8, 6.1)
+stage.cmd("controller.stage.position.set 0 0")
+map_chip(stage, camera, SAVE_DIR, 4, 0, 13.2, 11.4)
 # cleanup
 camera.deinit_cam()
 camera.release()

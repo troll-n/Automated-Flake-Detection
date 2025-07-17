@@ -86,13 +86,28 @@ class Stage:
             self.sessionID, create_string_buffer(msg.encode()), self.rx
         )
         return self.rx.value.decode()
-      
+    #sets the reference z-level; idk why this isn't a thing
+    def set_focus(self, mag):
+        if mag == 4:
+            return self.cmd("controller.z.position.set 0")
+        elif mag == 10 or mag == 20:
+            return self.cmd("controller.z.position.set -121")
+        else:
+            print("Stage error: Requested focus set is not one of interest.")
     # wrapper function for movement to make loops legible elsewhere
     def GoTo(self, coord) -> tuple:
         return self.cmd("controller.stage.goto-position %d %d" % (coord[0], coord[1]))
     # ditto but for focusing with z axis
     def Z_GoTo(self, coord) -> tuple:
         return self.cmd("controller.z.goto-position %d" % (coord))
+    # goes to the proper z for the requested magnification
+    def refocus(self, mag):
+        if mag == 4:
+            return self.Z_GoTo(0)
+        elif mag == 10 or mag == 20:
+            return self.Z_GoTo(-121)
+        else:
+            print("Stage error: I don't know where to focus this.")
     # Set the value of debug; by default false
     def debug(self, val):
         self.debug = val
