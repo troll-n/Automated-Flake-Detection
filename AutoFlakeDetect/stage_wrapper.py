@@ -86,8 +86,9 @@ class Stage:
             self.sessionID, create_string_buffer(msg.encode()), self.rx
         )
         return self.rx.value.decode()
-    #sets the reference z-level; idk why this isn't a thing
-    def set_focus(self, mag):
+    #sets the reference coordinates
+    def setZeros(self, mag):
+        self.cmd("controller.stage.position.set 0 0")
         if mag == 4:
             return self.cmd("controller.z.position.set 0")
         elif mag == 10 or mag == 20:
@@ -105,7 +106,7 @@ class Stage:
         if mag == 4:
             return self.Z_GoTo(0)
         elif mag == 10 or mag == 20:
-            return self.Z_GoTo(-121)
+            return self.Z_GoTo(-1210)
         else:
             print("Stage error: I don't know where to focus this.")
     # Set the value of debug; by default false

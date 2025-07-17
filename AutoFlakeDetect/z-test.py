@@ -19,7 +19,17 @@ FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 stage = Stage(FILE_DIR)
 stage.debug(True)
-stage.cmd("controller.z.position.set %d" % 0)
+stage.setZeros(4)
+
+input("Change magnification to 4x please!\n")
+stage.refocus(4)
+
+input("Change magnification to 10x please!\n")
+stage.refocus(10)
+
+input("Change magnification to 20x please!\n")
+stage.refocus(20)
+
 for x in range(0,10):
     z = int(stage.retCmd("controller.z.position.get"))
     print("current z: %d" % z)

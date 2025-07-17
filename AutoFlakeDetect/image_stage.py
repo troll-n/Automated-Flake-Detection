@@ -254,8 +254,8 @@ def map_chip(stage, camera, SAVE_DIR, mag, chip_id, chip_x, chip_y):
     # Below in MICRONS (prior microscope does it in microns)
     marginx = int(microns_per_x_capture / 2)
     marginy = int(microns_per_y_capture / 2)
-    cap_x = int(chip_x * 100 + (mag / 2) * marginx)
-    cap_y = int(chip_y * 100 + (mag / 2) * marginy)
+    cap_x = int(chip_x * 1000 + (mag / 2) * marginx)
+    cap_y = int(chip_y * 1000 + (mag / 2) * marginy)
     count = 0
     # x coords to visit
     xToVisit = range(-marginx, cap_x, microns_per_x_capture)
@@ -511,8 +511,10 @@ def fetch_parameters(mag) -> tuple[int,int,int,int]:
         micron_y_shift_per_row = -40 # original 42
     elif mag == 10:
         # not optimized
-        microns_per_x_capture = 840 
-        microns_per_y_capture = 750
+        microns_per_x_capture = 663
+        microns_per_y_capture = 418
+        micron_x_shift_per_col = 10
+        micron_y_shift_per_row = -16
     elif mag == 20:
         # optimized
         microns_per_x_capture = 328 
@@ -541,8 +543,21 @@ stage = Stage(FILE_DIR)
 stage.debug(False)
 # POINT CAMERA AT TOP LEFT OF CHIP BEFORE RUNNING THIS PROGRAM!
 # Also note that one cannot run the SpinNaker porgram and this one at the same time.
-stage.cmd("controller.stage.position.set 0 0")
-map_chip(stage, camera, SAVE_DIR, 4, 0, 13.2, 11.4)
+#input("Change magnification to 4x please!\n")
+#stage.setZeros(4)
+#stage.refocus(4)
+#map_chip(stage, camera, SAVE_DIR, 4, 0, 10, 10)
+
+#input("Change magnification to 10x please!\n")
+#stage.refocus(10)
+#stage.cmd("controller.stage.position.set 0 0")
+SAVE_DIR = os.path.join(FILE_DIR, "10xtest_images")
+map_chip(stage,camera,SAVE_DIR,10,0,1,1)
+
+#input("Change magnification to 20x please!\n")
+#stage.refocus(20)
+#SAVE_DIR = os.path.join(FILE_DIR, "20xtest_images")
+#map_chip(stage,camera,SAVE_DIR,20,0,1,1)
 # cleanup
 camera.deinit_cam()
 camera.release()
