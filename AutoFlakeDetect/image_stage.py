@@ -1,6 +1,5 @@
 # basics
 import argparse, json, os, sys
-import cv2
 import numpy as np
 import time
 from PIL import Image
@@ -543,21 +542,21 @@ stage = Stage(FILE_DIR)
 stage.debug(False)
 # POINT CAMERA AT TOP LEFT OF CHIP BEFORE RUNNING THIS PROGRAM!
 # Also note that one cannot run the SpinNaker porgram and this one at the same time.
-#input("Change magnification to 4x please!\n")
-#stage.setZeros(4)
-#stage.refocus(4)
-#map_chip(stage, camera, SAVE_DIR, 4, 0, 10, 10)
+input("Change magnification to 4x please!\n")
+stage.setZeros(4)
+stage.refocus(4)
+map_chip(stage, camera, SAVE_DIR, 4, 0, 10, 10)
 
-#input("Change magnification to 10x please!\n")
-#stage.refocus(10)
-#stage.cmd("controller.stage.position.set 0 0")
+input("Change magnification to 10x please!\n")
+stage.refocus(10)
+stage.cmd("controller.stage.position.set 0 0")
 SAVE_DIR = os.path.join(FILE_DIR, "10xtest_images")
 map_chip(stage,camera,SAVE_DIR,10,0,1,1)
 
-#input("Change magnification to 20x please!\n")
-#stage.refocus(20)
-#SAVE_DIR = os.path.join(FILE_DIR, "20xtest_images")
-#map_chip(stage,camera,SAVE_DIR,20,0,1,1)
+input("Change magnification to 20x please!\n")
+stage.refocus(20)
+SAVE_DIR = os.path.join(FILE_DIR, "20xtest_images")
+map_chip(stage,camera,SAVE_DIR,20,0,1,1)
 # cleanup
 camera.deinit_cam()
 camera.release()

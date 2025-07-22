@@ -19,7 +19,7 @@ FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 stage = Stage(FILE_DIR)
 stage.debug(True)
-stage.setZeros(4)
+stage.setZeros(20)
 
 input("Change magnification to 4x please!\n")
 stage.refocus(4)

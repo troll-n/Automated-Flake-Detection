@@ -12,3 +12,5 @@ bad_UltraTrimmed_Graphene
 UltraTrimmed_Graphene
 # Dont commit VSCode settings
 .vscode
+# don't commit sandbox
+test.py
