@@ -1,0 +1,17 @@
+"﻿cas_w" = 38.1mm
+"cas_l" = 83.0mm
+"cas_h" = 280.0mm
+"rail_w" = 50.5mm
+"rail_c" = 10.5mm
+"stinset_l" = 160mm
+"stinset_w" = 110mm
+"stinset_h" = 3mm
+"stinset_fillet" = 5mm
+"slide_l" = 75.6mm
+"slide_w" = 26mm
+"slide_h" = 1.07mm
+"slide_fillet" = 1mm
+"stxslide_l" = 305mm
+"stxslide_w" = 150mm
+"stxslide_h" = 10mm
+"stmount_width" = 214mm
