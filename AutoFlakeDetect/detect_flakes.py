@@ -31,7 +31,7 @@ from rotpy.system import SpinSystem
 from rotpy.camera import CameraList
 
 # Misc functions
-import img_merge as merge
+import AutoFlakeDetect.img_utils as merge
 
 # Strictly necessary functions
 def arg_parse() -> dict:

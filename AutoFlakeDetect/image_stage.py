@@ -5,7 +5,7 @@ import time
 from PIL import Image
 # custom imports
 from GMMDetector import MaterialDetector
-import img_merge as mg
+import AutoFlakeDetect.img_utils as mg
 # stage
 from stage_wrapper import Stage
 # Blackfly camera
