@@ -355,6 +355,97 @@ def map_chip(stage, camera, SAVE_DIR, mag, chip_id, chip_x, chip_y):
     stage.GoTo((0,0))
     return (len(xToVisit),len(yToVisit))
 
+def move_around_chip(stage, mag, chip_x, chip_y):
+    """
+    Like map_chip but without the saving images bit; used for debugging primarily. 
+
+    Arguments:
+        stage: Our stage object
+        camera: Our SpinSystem Camera object
+        SAVE_DIR: Directory to save images to
+        mag: Magnification level
+        chip_id: int, ID of the chip, important for database storage
+        chip_x: float, x-dimension of the chip. mm
+        chip_y: float, y-dimension of the chip, mm
+    Requires:
+        0,0 set for stage (done in detect_flakes), top left
+    Ensures:
+        Mapped chip is saved in proper location as a jpg - read README.md if confused
+    Returns:
+        (cap_x,cap_y)
+    """
+
+    # defaults (throws error if not changed)
+    start = time.time()
+
+    # Fetching the parameters necessary for imaging; see function for more details
+    (microns_per_x_capture,microns_per_y_capture,
+     micron_x_shift_per_col,micron_y_shift_per_row) = fetch_parameters(mag)
+    
+    # Below in MICRONS (prior microscope does it in microns)
+    marginx = int(microns_per_x_capture / 2)
+    marginy = int(microns_per_y_capture / 2)
+    cap_x = int(chip_x * 1000 + (mag / 2) * marginx)
+    cap_y = int(chip_y * 1000 + (mag / 2) * marginy)
+    count = 0
+    # x coords to visit
+    xToVisit = range(-marginx, cap_x, microns_per_x_capture)
+    xCount = 0
+    # y coords to visit
+    yToVisit = range(-marginy, cap_y,microns_per_y_capture)
+    yCount = 0
+
+    og_debug = stage.debugOn
+    stage.debug(True)
+
+    for x in xToVisit:
+        adapted_yToVisit = 0
+        if xCount % 2 == 0:
+            adapted_yToVisit = yToVisit
+            yCount = 0
+        else:
+            adapted_yToVisit = reversed(yToVisit)
+            yCount = len(yToVisit) - 1
+        is_x_Even = (xCount % 2 == 0)
+        is_y_Start = True
+        for y in adapted_yToVisit:
+            
+            count+=1 #can't believe ++ isn't a thing in python
+
+            # move to next place desired to image
+            busyStatus = int(stage.retCmd( "controller.stage.busy.get"))
+            while busyStatus != 0:
+                time.sleep(0.05)
+                busyStatus = int(stage.retCmd("controller.stage.busy.get"))
+
+            stage.GoTo((-(x+micron_x_shift_per_col*yCount),-(y+micron_y_shift_per_row*xCount)))
+
+            while busyStatus != 0:
+                time.sleep(0.05)
+                busyStatus = int(stage.retCmd("controller.stage.busy.get"))
+            # wait for a little
+            
+            if (is_y_Start):
+                # wait longer because side to side movement takes longer than up and down
+                time.sleep(0.25)
+            else:
+                time.sleep(0.2)
+            # change y-iterator the right way 
+            if (is_x_Even):
+                yCount+=1
+            else:
+                yCount-=1
+        xCount+=1
+    
+    #don't forget to save the map!
+    print("total spots visited:", count)
+    print("to complete, function took the following amount of seconds:", int(time.time() - start))
+
+    #return to where we started off because that's nice
+    stage.GoTo((0,0))
+    stage.debug(og_debug)
+    return (len(xToVisit),len(yToVisit))
+
 def scan_chip(stage, camera, SAVE_DIR, chip_id, chip_x, chip_y):
     """
     Scans the loaded chip with a snaking algorithm. Magnification is always 20x
@@ -528,7 +619,7 @@ def fetch_parameters(mag) -> tuple[int,int,int,int]:
         microns_per_x_capture = int(slopex * mag)
         microns_per_y_capture = int(slopey * mag)
     return (microns_per_x_capture, microns_per_y_capture, micron_x_shift_per_col, micron_y_shift_per_row)
-
+"""
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 SAVE_DIR = os.path.join(FILE_DIR, "4xtest_images")
 system = SpinSystem()
@@ -561,3 +652,4 @@ map_chip(stage,camera,SAVE_DIR,20,0,1,1)
 camera.deinit_cam()
 camera.release()
 stage.cmd("controller.disconnect")
+"""

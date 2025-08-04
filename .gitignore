@@ -3,13 +3,17 @@ build/
 __pycache__
 # dont commit the results
 AutoFlakeDetect/Output/*
+AutoFlakeDetect/map_gallery
 AutoFlakeDetect/4xtest_images/*
 AutoFlakeDetect/10xtest_images/*
 AutoFlakeDetect/20xtest_images/*
+AutoFlakeDetect/Input
+AutoFlakeDetect/Output
 NativeG_dataset
 archived_datasets
 bad_UltraTrimmed_Graphene
 UltraTrimmed_Graphene
+CenteredGraphene
 # Dont commit VSCode settings
 .vscode
 # don't commit sandbox

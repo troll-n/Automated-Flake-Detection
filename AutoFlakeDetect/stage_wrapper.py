@@ -16,7 +16,7 @@ class Stage:
     SDKPrior = ""
     rx = 0
     sessionID = ""
-    debug = False
+    debugOn = False
     firstCmd = True
 
     def __init__(self, FILE_DIR):
@@ -66,7 +66,7 @@ class Stage:
 
     # stage command: passes any commands to the controller
     def cmd(self, msg) -> tuple:
-        if self.debug: print(msg)
+        if self.debugOn: print(msg)
         ret = self.SDKPrior.PriorScientificSDK_cmd(
             self.sessionID, create_string_buffer(msg.encode()), self.rx
         )
@@ -74,14 +74,14 @@ class Stage:
             print(f"Api error {ret}")
             assert(False)
         else:
-            if self.debug: print(f"OK {self.rx.value.decode()}")
+            if self.debugOn: print(f"OK {self.rx.value.decode()}")
 
-        if self.debug: input("Press ENTER to continue...")
+        if self.debugOn: input("Press ENTER to continue...")
         return ret, self.rx.value.decode()
     
     # stage command but for if you expect a return value
     def retCmd(self, msg):
-        if self.debug: print(msg)
+        if self.debugOn: print(msg)
         ret = self.SDKPrior.PriorScientificSDK_cmd(
             self.sessionID, create_string_buffer(msg.encode()), self.rx
         )
@@ -120,4 +120,4 @@ class Stage:
 
     # Set the value of debug; by default false
     def debug(self, val):
-        self.debug = val
+        self.debugOn = val
