@@ -5,7 +5,7 @@ import time
 from PIL import Image
 # custom imports
 from GMMDetector import MaterialDetector
-import AutoFlakeDetect.img_utils as mg
+import AutoFlakeDetect.img_utils as iut
 # stage
 from stage_wrapper import Stage
 # Blackfly camera
@@ -194,7 +194,7 @@ def rect_map_chip(stage, camera, SAVE_DIR, mag, chip_id, chip_x, chip_y):
                     img_stripe = im.copy()
                     print("copied im over")
                 else:
-                    img_stripe = mg.imgDown(img_stripe,im)
+                    img_stripe = iut.imgDown(img_stripe,im)
                     print("merged im")
             yCount+=1
         # we have completed a stripe, add it to the map
@@ -203,7 +203,7 @@ def rect_map_chip(stage, camera, SAVE_DIR, mag, chip_id, chip_x, chip_y):
             img_map = img_stripe.copy()
         else: 
             # merge this stripe with our overall map
-            img_map = mg.imgRight(img_map,img_stripe)
+            img_map = iut.imgRight(img_map,img_stripe)
         yCount = 0
         xCount+=1
     
@@ -327,10 +327,10 @@ def map_chip(stage, camera, SAVE_DIR, mag, chip_id, chip_x, chip_y):
                     is_y_Start = False
                 else:
                     if (is_x_Even):
-                        img_stripe = mg.imgDown(img_stripe,im)
+                        img_stripe = iut.imgDown(img_stripe,im)
                     else:
                         # reverse of down is up, so just flip the arguments
-                        img_stripe = mg.imgDown(im,img_stripe)
+                        img_stripe = iut.imgDown(im,img_stripe)
             # change y-iterator the right way 
             if (is_x_Even):
                 yCount+=1
@@ -343,7 +343,7 @@ def map_chip(stage, camera, SAVE_DIR, mag, chip_id, chip_x, chip_y):
             img_map = img_stripe.copy()
         else: 
             # merge this stripe with our overall map
-            img_map = mg.imgRight(img_map,img_stripe)
+            img_map = iut.imgRight(img_map,img_stripe)
         xCount+=1
     
     #don't forget to save the map!
@@ -469,8 +469,6 @@ def scan_chip(stage, camera, SAVE_DIR, chip_id, chip_x, chip_y):
 
     # General prefix that we'll use for this chip 
     # Filename we'll use for this chip map 
-    filename = "map_" + str(chip_id) + ".jpg"
-    mappath = os.path.join(SAVE_DIR, filename)
     
     prefix = "ch" + str(chip_id) + "_"
     start = time.time()
@@ -492,19 +490,9 @@ def scan_chip(stage, camera, SAVE_DIR, chip_id, chip_x, chip_y):
     # y coords to visit
     yToVisit = range(-marginy, cap_y,microns_per_y_capture)
     yCount = 0
-    
-    if(len(xToVisit) * len(yToVisit) > 200):
-        print("""Warning: You are about to make a very massive image, perhaps due to having a unnecessarily high magnification setting or loading a particularly large chip. \n
-              This program will take a long time to complete, and even if it does, the finished map image may fail to be saved due to limitations in the library this program uses.\n
-              """)
-        if (input("Enter N to exit program, or anything else to continue anyways: ") == "N"):
-            assert(False)
-
-    img_map = 0
 
     for x in xToVisit:
         # make a new stripe that lives in this scope
-        img_stripe = 0
         adapted_yToVisit = 0
         if xCount % 2 == 0:
             adapted_yToVisit = yToVisit
@@ -561,7 +549,6 @@ def scan_chip(stage, camera, SAVE_DIR, chip_id, chip_x, chip_y):
         xCount+=1
     
     #don't forget to save the map!
-    img_map.save(mappath)
     print("total images taken:", count)
     print("to complete, function took the following amount of seconds:", int(time.time() - start))
 

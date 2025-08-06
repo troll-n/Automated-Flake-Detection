@@ -14,8 +14,9 @@ archived_datasets
 bad_UltraTrimmed_Graphene
 UltraTrimmed_Graphene
 CenteredGraphene
+Native_Datasets
 # Dont commit VSCode settings
 .vscode
 # don't commit sandbox
 test.py
-test1.py
+speedtest.py

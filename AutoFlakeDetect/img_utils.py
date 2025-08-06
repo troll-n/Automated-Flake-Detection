@@ -110,7 +110,7 @@ def normalize_Gr(img, normalizeTo, regular = True):
     avg_color = (0,0,0)
     if regular:
         # this is the regular one just define the average color like usual
-        avg_color = (173,175,176) # update this with a pristine empty sample 
+        avg_color = (173,175,176) # unironically just a shade of gray
     else:
         # calculate the average color of the normalizeTo img (really not reccomended for optimization reasons)
         avg_color_per_row = np.average(normalizeTo, axis=0)
