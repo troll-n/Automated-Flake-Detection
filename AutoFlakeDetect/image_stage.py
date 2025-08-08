@@ -446,13 +446,15 @@ def move_around_chip(stage, mag, chip_x, chip_y):
     stage.debug(og_debug)
     return (len(xToVisit),len(yToVisit))
 
-def scan_chip(stage, camera, SAVE_DIR, chip_id, chip_x, chip_y):
+def scan_chip(stage, camera, model, background, SAVE_DIR, chip_id, chip_x, chip_y):
     """
     Scans the loaded chip with a snaking algorithm. Magnification is always 20x
 
     Arguments:
         stage: Our stage object
         camera: Our SpinSystem Camera object
+        model: Our GMMDetector object
+        background: np array (not filepath!) with data on background of our imaging apparatus 
         SAVE_DIR: Directory to save images to
         chip_id: int, ID of the chip, important for database storage
         chip_x: float, x-dimension of the chip. mm
@@ -470,7 +472,7 @@ def scan_chip(stage, camera, SAVE_DIR, chip_id, chip_x, chip_y):
     # General prefix that we'll use for this chip 
     # Filename we'll use for this chip map 
     
-    prefix = "ch" + str(chip_id) + "_"
+    maxflake = 0
     start = time.time()
     mag = 20
 
@@ -481,15 +483,19 @@ def scan_chip(stage, camera, SAVE_DIR, chip_id, chip_x, chip_y):
     # Below in MICRONS (prior microscope does it in microns)
     marginx = int(microns_per_x_capture / 2)
     marginy = int(microns_per_y_capture / 2)
-    cap_x = int(chip_x * 1000 + (mag / 2) * marginx)
-    cap_y = int(chip_y * 1000 + (mag / 2) * marginy)
+    cap_x = int(chip_x * 1000 - marginx)
+    cap_y = int(chip_y * 1000 - marginy)
     count = 0
+    # here we actually use the margins to be within the borders of the 
     # x coords to visit
-    xToVisit = range(-marginx, cap_x, microns_per_x_capture)
+    xToVisit = range(marginx, cap_x, microns_per_x_capture)
     xCount = 0
     # y coords to visit
-    yToVisit = range(-marginy, cap_y,microns_per_y_capture)
+    yToVisit = range(marginy, cap_y,microns_per_y_capture)
     yCount = 0
+
+    # make a buffer for us to use :)
+    buff = np.full([1920*1200*3],0,np.uint8)
 
     for x in xToVisit:
         # make a new stripe that lives in this scope
@@ -525,22 +531,28 @@ def scan_chip(stage, camera, SAVE_DIR, chip_id, chip_x, chip_y):
             else:
                 time.sleep(0.2)
             
-            # obtain an image
             camera.begin_acquisition()
             image_cam = camera.get_next_image()
-            curr_image = image_cam.deep_copy_image(image_cam)
+            # transfer data into buffer
+            image_cam.copy_image_data(buff)
+            #release the camera we don't need it
             image_cam.release()
             camera.end_acquisition()
-
-            # save it
-            imgname = prefix + str(xCount) + "_" + str(yCount) + ".jpg"
-            jpeg_path = os.path.join(SAVE_DIR, imgname)
-            curr_image.save_jpeg(jpeg_path)
+            # re-organize it into a 3d array (idt the data changes so much as a pointer is thrown in to the address in memory)
+            # this is where i wish i was coding in C
+            imgnp = np.ndarray([1200,1920,3], buffer=buff, dtype=np.uint8)
+            #normalize it
+            imgnp = iut.normalize_Gr(imgnp, background)
+            flakes = model(imgnp)
+            # for now let's just hold onto the biggest flake with fp prob < 5
+            for flake in flakes:
+                if maxflake == 0:
+                    maxflake = (x,y,flake)
+                if flake.size >= maxflake[2].size and flake.false_positive_probability <= 0.05:
+                    maxflake = (x,y,flake)
+                    print("new biggest flake:", maxflake[2])
+                    print("@ ", x, ",", y)
             
-            # open the image as a PIL image; i know it's silly but rotpy has bad documentation and i can't figure out how to directly convert it in memory
-            with Image.open(jpeg_path) as im:
-                # look for flakes
-                pass
             # change y-iterator the right way 
             if (is_x_Even):
                 yCount+=1
@@ -554,7 +566,7 @@ def scan_chip(stage, camera, SAVE_DIR, chip_id, chip_x, chip_y):
 
     #return to where we started off because that's nice
     stage.GoTo((0,0))
-    return (len(xToVisit),len(yToVisit))
+    return maxflake
 
 
 
